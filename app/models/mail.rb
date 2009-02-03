@@ -6,9 +6,9 @@ class Mail
     @errors = {}
   end
 
-  def self.valid_config?(config)
-    return false if config['recipients'].blank? and config['recipients_field'].blank?
-    return false if config['from'].blank? and config['from_field'].blank?
+  def self.valid_config?(mailer_config)
+    return false if mailer_config['recipients'].blank?
+    return false if mailer_config['from'].blank?
     true
   end
 
