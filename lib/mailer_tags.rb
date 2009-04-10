@@ -150,11 +150,11 @@ module MailerTags
       %(<input type="radio" value="#{value}"#{%( checked="checked") if selected} #{mailer_attrs(tag)} />)
     end
   end
-  
+
   desc %{
-    Provides a mechanism to iterate over array datum submitted via a 
-    mailer form. Used in the 'email', 'email_html', and 'mailer' parts to 
-    generate the resulting email. May work OK nested, but this hasn't been 
+    Provides a mechanism to iterate over array datum submitted via a
+    mailer form. Used in the 'email', 'email_html', and 'mailer' parts to
+    generate the resulting email. May work OK nested, but this hasn't been
     tested.
   }
   tag 'mailer:get_each' do |tag|
@@ -184,16 +184,16 @@ module MailerTags
     end
     result
   end
-  
-  desc %{ 
-    Uses @ActionView::Helpers::DateHelper.date_select@ to render three select tags for date selection. 
+
+  desc %{
+    Uses @ActionView::Helpers::DateHelper.date_select@ to render three select tags for date selection.
   }
   tag 'mailer:date_select' do |tag|
     raise_error_if_name_missing "mailer:date_select", tag.attr
     name = tag.attr.delete('name')
-    
+
     options = {}
-    
+
     tag.attr.each do |k, v|
       if v =~ /(true|false)/
         options[k] = (v == 'true')
@@ -205,17 +205,17 @@ module MailerTags
         options[k] = v
       end
     end
-    
+
     options.symbolize_keys!
-    
+
     date_select('mailer', name, options)
   end
 
   desc %{
-    Renders the value of a datum submitted via a mailer form.  Used in the 
+    Renders the value of a datum submitted via a mailer form.  Used in the
     'email', 'email_html', and 'mailer' parts to generate the resulting email.
-    When used within mailer:get_each it defaults to getting elements within 
-    that array. 
+    When used within mailer:get_each it defaults to getting elements within
+    that array.
   }
   tag 'mailer:get' do |tag|
     name = tag.attr['name']
@@ -231,18 +231,18 @@ module MailerTags
       element.to_hash.to_yaml.to_s
     end
   end
-    
+
   desc %{
-    For use within a mailer:get_each to output the index/key for each element 
-    of the hash. 
+    For use within a mailer:get_each to output the index/key for each element
+    of the hash.
   }
   tag 'mailer:index' do |tag|
     tag.locals.mailer_key || nil
   end
 
   desc %{
-    Renders the contained block if a named datum was submitted via a mailer 
-    form.  Used in the 'email', 'email_html' and 'mailer' parts to generate 
+    Renders the contained block if a named datum was submitted via a mailer
+    form.  Used in the 'email', 'email_html' and 'mailer' parts to generate
     the resulting email.
   }
   tag 'mailer:if_value' do |tag|
@@ -251,7 +251,12 @@ module MailerTags
     mail = tag.locals.page.last_mail || tag.globals.page.last_mail
     tag.expand if name && mail.data[name] && (eq.blank? || eq == mail.data[name])
   end
-  
+
+  desc %{ Provides reCAPTCHA integration }
+  tag 'mailer:captcha' do |tag|
+    recaptcha_tags()
+  end
+
   def format_mailer_data(element, name)
     data = element[name]
     if Array === data
@@ -262,10 +267,10 @@ module MailerTags
       data
     end
   end
-  
+
   def detect_date(mail, name)
     date_components = mail.select { |key, value| key =~ Regexp.new("#{name}\\(\\di\\)") }
-    
+
     if date_components.length == 3
       date_values = date_components.sort { |a, b| a[0] <=> b[0] }.map { |v| v[1].to_i }
       return Date.new(*date_values)

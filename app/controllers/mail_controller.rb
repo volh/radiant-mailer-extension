@@ -1,7 +1,7 @@
 class MailController < ApplicationController
 
   no_login_required
-  skip_before_filter :verify_authenticity_token  
+  skip_before_filter :verify_authenticity_token
 
   def create
     @page = Page.find(params[:page_id])
@@ -11,6 +11,10 @@ class MailController < ApplicationController
 
     mail = Mail.new(part_page, config, params[:mailer])
     @page.last_mail = part_page.last_mail = mail
+
+    # TODO This will be here until I modify recaptcha library to be rails/action_controller independent.
+    redirect_to :back and return unless verify_recaptcha()
+
     process_mail(mail, config)
 
     if mail.send
@@ -19,9 +23,9 @@ class MailController < ApplicationController
       render :text => @page.render
     end
   end
-  
+
   private
-  
+
   # Hook here to do additional things, like check a CAPTCHA
   def process_mail(mail, config)
   end
