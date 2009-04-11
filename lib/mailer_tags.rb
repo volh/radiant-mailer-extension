@@ -1,6 +1,8 @@
 module MailerTags
   include Radiant::Taggable
   include ActionView::Helpers::DateHelper
+  include Ambethia::ReCaptcha::Helper      
+  include Ambethia::ReCaptcha::Controller 
 
   def mailer_config
     @mailer_config ||= begin
